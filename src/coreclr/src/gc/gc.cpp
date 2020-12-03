@@ -2681,6 +2681,8 @@ size_t     gc_heap::interesting_mechanism_bits_per_heap[max_gc_mechanism_bits_co
 
 /* end of per heap static initialization */
 
+extern const gc_flavor_debug_contract g_gc_flavor_debug_contract = {};
+
 /* end of static initialization */
 
 #ifndef DACCESS_COMPILE

@@ -165,3 +165,13 @@ EEType * EEType::get_RelatedParameterType()
 	else
 		return PTR_EEType(reinterpret_cast<TADDR>(m_RelatedType.m_pRelatedParameterType));
 }
+
+struct EETypeDebugContract
+{
+    const uint16_t MajorVersion = 1; // breaking changes
+    const uint16_t MinorVersion = 0; // back-compatible changes
+    const uint32_t OffsetOfEETypeBaseSize = offsetof(EEType, m_uBaseSize);
+    const uint32_t OffsetOfEETypeComponentSize = offsetof(EEType, m_usComponentSize);
+};
+
+extern const EETypeDebugContract g_EETypeDebugContract = {}; 

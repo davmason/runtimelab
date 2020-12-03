@@ -113,6 +113,7 @@ typedef DPTR(PTR_OptionalFields) PTR_PTR_OptionalFields;
 class EEType
 {
     friend class AsmOffsets;
+    friend struct EETypeDebugContract;
 
 private:
     struct RelatedTypeUnion

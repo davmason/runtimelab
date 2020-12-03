@@ -40,6 +40,7 @@ class MethodTable;
 class Object
 {
     friend class AsmOffsets;
+    friend struct ObjectDebugContract;
 
     PTR_EEType  m_pEEType;
 public:
@@ -92,6 +93,7 @@ class Array : public Object
 {
     friend class ArrayBase;
     friend class AsmOffsets;
+    friend struct ObjectDebugContract;
 
     uint32_t       m_Length;
 #if defined(HOST_64BIT)

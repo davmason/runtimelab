@@ -19,6 +19,7 @@ class RuntimeInstance
     friend class AsmOffsets;
     friend struct DefaultSListTraits<RuntimeInstance>;
     friend class Thread;
+    friend struct RuntimeInstanceDebugContract;
 
     PTR_ThreadStore             m_pThreadStore;
     HANDLE                      m_hPalInstance; // this is the HANDLE passed into DllMain

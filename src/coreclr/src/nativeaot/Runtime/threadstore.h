@@ -15,6 +15,8 @@ enum class TrapThreadsFlags
 
 class ThreadStore
 {
+    friend struct ThreadStoreDebugContract;
+    
     SList<Thread>       m_ThreadList;
     PTR_RuntimeInstance m_pRuntimeInstance;
     CLREventStatic      m_SuspendCompleteEvent;
