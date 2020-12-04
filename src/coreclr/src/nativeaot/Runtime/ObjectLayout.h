@@ -37,10 +37,13 @@ typedef DPTR(class EEType) PTR_EEType;
 class MethodTable;
 
 //-------------------------------------------------------------------------------------------------
+
+extern "C" void PopulateDebugHeaders();
+
 class Object
 {
     friend class AsmOffsets;
-    friend struct ObjectDebugContract;
+    friend void PopulateDebugHeaders();
 
     PTR_EEType  m_pEEType;
 public:
@@ -93,7 +96,7 @@ class Array : public Object
 {
     friend class ArrayBase;
     friend class AsmOffsets;
-    friend struct ObjectDebugContract;
+    friend void PopulateDebugHeaders();
 
     uint32_t       m_Length;
 #if defined(HOST_64BIT)

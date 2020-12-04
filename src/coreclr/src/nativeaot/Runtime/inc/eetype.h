@@ -110,10 +110,12 @@ typedef DPTR(PTR_EEType) PTR_PTR_EEType;
 typedef DPTR(class OptionalFields) PTR_OptionalFields;
 typedef DPTR(PTR_OptionalFields) PTR_PTR_OptionalFields;
 
+extern "C" void PopulateDebugHeaders();
+
 class EEType
 {
     friend class AsmOffsets;
-    friend struct EETypeDebugContract;
+    friend void PopulateDebugHeaders();
 
 private:
     struct RelatedTypeUnion
