@@ -148,6 +148,8 @@ extern "C" void PopulateDebugHeaders()
 
     MAKE_DEBUG_ENTRY(ThreadBuffer, m_pNext);
     MAKE_DEBUG_ENTRY(ThreadBuffer, m_rgbAllocContextBuffer);
+    MAKE_DEBUG_ENTRY(ThreadBuffer, m_threadId);
+    MAKE_DEBUG_ENTRY(ThreadBuffer, m_pThreadStressLog);
 
     MAKE_DEBUG_ENTRY(EEType, m_uBaseSize);
     MAKE_DEBUG_ENTRY(EEType, m_usComponentSize);
