@@ -544,7 +544,6 @@ extern LockOwner g_lockTrustMeIAmThreadSafe;
 // and we use OS ThreadId to identify them since they are not managed by a host.
 class EEThreadId
 {
-    friend void PopulateDebugHeaders();
 private:
     void *m_FiberPtrId;
 public:

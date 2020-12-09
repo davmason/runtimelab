@@ -26,24 +26,6 @@
 #include "thread.h"
 #include "threadstore.h"
 
-struct GCDebugContract;
-extern const GCDebugContract g_GCDebugContract;
-namespace WKS
-{
-    struct gc_flavor_debug_contract;
-    extern const gc_flavor_debug_contract g_gc_flavor_debug_contract;
-}
-struct RuntimeInstanceDebugContract;
-extern const RuntimeInstanceDebugContract g_RuntimeInstanceDebugContract;
-struct ThreadStoreDebugContract;
-extern const ThreadStoreDebugContract g_ThreadStoreDebugContract;
-struct ThreadDebugContract;
-extern const ThreadDebugContract g_ThreadDebugContract;
-struct ObjectDebugContract;
-extern const ObjectDebugContract g_ObjectDebugContract;
-struct EETypeDebugContract;
-extern const EETypeDebugContract g_EETypeDebugContract;
-
 struct DebugTypeEntry
 {
     DebugTypeEntry *Next;
@@ -132,11 +114,32 @@ extern "C" NativeAOTRuntimeDebugHeader g_NativeAOTRuntimeDebugHeader = {};
         previousType = currentType;                                                                                         \
     } while(0)                                                                                                              \
 
+#define MAKE_DEBUG_ENTRY_HARDCODED(TypeName, FieldName, Offset)                                                             \
+    do                                                                                                                      \
+    {                                                                                                                       \
+        currentType = new (nothrow) DebugTypeEntry{ previousType, #TypeName, #FieldName, Offset };                          \
+        previousType = currentType;                                                                                         \
+    } while(0)                                                                                                              \
+
+#define MAKE_SIZE_ENTRY(TypeName)                                                                                           \
+    do                                                                                                                      \
+    {                                                                                                                       \
+        currentType = new (nothrow) DebugTypeEntry{ previousType, #TypeName, "SIZEOF", sizeof(TypeName) };                  \
+        previousType = currentType;                                                                                         \
+    } while(0)                                                                                                              \
+
+#define MAKE_SIZE_ENTRY_HARDCODED(TypeName, Size)                                                                           \
+    do                                                                                                                      \
+    {                                                                                                                       \
+        currentType = new (nothrow) DebugTypeEntry{ previousType, #TypeName, "SIZEOF", Size };                              \
+        previousType = currentType;                                                                                         \
+    } while(0)                                                                                                              \
+
 #define MAKE_GLOBAL_ENTRY(Name)                                                                                             \
     do                                                                                                                      \
     {                                                                                                                       \
-        currentGlobal = new (nothrow) GlobalValueEntry{ previousGlobal, #Name, Name };                                                     \
-        previousGlobal = currentGlobal;                                                                                       \
+        currentGlobal = new (nothrow) GlobalValueEntry{ previousGlobal, #Name, Name };                                      \
+        previousGlobal = currentGlobal;                                                                                     \
     } while(0)                                                                                                              \
 
 extern "C" void PopulateDebugHeaders()
@@ -144,21 +147,30 @@ extern "C" void PopulateDebugHeaders()
     DebugTypeEntry *previousType = nullptr;
     DebugTypeEntry *currentType = nullptr;
 
+    MAKE_SIZE_ENTRY(ThreadStore);
     MAKE_DEBUG_ENTRY(ThreadStore, m_ThreadList);
 
+    MAKE_SIZE_ENTRY(ThreadBuffer);
     MAKE_DEBUG_ENTRY(ThreadBuffer, m_pNext);
     MAKE_DEBUG_ENTRY(ThreadBuffer, m_rgbAllocContextBuffer);
     MAKE_DEBUG_ENTRY(ThreadBuffer, m_threadId);
     MAKE_DEBUG_ENTRY(ThreadBuffer, m_pThreadStressLog);
 
-    MAKE_DEBUG_ENTRY(EEThreadID, m_FiberPtrId);
+    // EEThreadID is forward declared and not available
+    MAKE_SIZE_ENTRY_HARDCODED(EEThreadID, sizeof(void*));
+    MAKE_DEBUG_ENTRY_HARDCODED(EEThreadID, m_FiberPtrId, 0);
 
+    MAKE_SIZE_ENTRY(EEType);
     MAKE_DEBUG_ENTRY(EEType, m_uBaseSize);
     MAKE_DEBUG_ENTRY(EEType, m_usComponentSize);
 
+    MAKE_SIZE_ENTRY(Object);
     MAKE_DEBUG_ENTRY(Object, m_pEEType);
+
+    MAKE_SIZE_ENTRY(Array);
     MAKE_DEBUG_ENTRY(Array, m_Length);
 
+    MAKE_SIZE_ENTRY(RuntimeInstance);
     MAKE_DEBUG_ENTRY(RuntimeInstance, m_pThreadStore);
 
     GlobalValueEntry *previousGlobal = nullptr;
