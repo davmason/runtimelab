@@ -2,30 +2,28 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 #include "common.h"
-#include "CommonTypes.h"
-#include "CommonMacros.h"
-#include "daccess.h"
+#include "gcenv.h"
+#include "gcheaputilities.h"
+#include "gcinterface.dac.h"
 #include "rhassert.h"
-#include "slist.h"
-#include "gcrhinterface.h"
-#include "ObjectLayout.h"
-#include "shash.h"
-#include "RWLock.h"
-#include "TypeManager.h"
 #include "TargetPtrs.h"
-#include "eetype.h"
 #include "varint.h"
 #include "PalRedhawkCommon.h"
 #include "PalRedhawk.h"
 #include "holder.h"
-#include "Crst.h"
 #include "RuntimeInstance.h"
-#include "event.h"
 #include "regdisplay.h"
 #include "StackFrameIterator.h"
 #include "thread.h"
 #include "threadstore.h"
-#include "gcinterface.dac.h"
+
+// typedef int BOOL;
+// //
+// // _UNCHECKED_OBJECTREF is for code that can't deal with DEBUG OBJECTREFs
+// //
+// typedef PTR_Object _UNCHECKED_OBJECTREF;
+// typedef DPTR(PTR_Object) PTR_UNCHECKED_OBJECTREF;
+// #define LIMITED_METHOD_CONTRACT
 
 struct DebugTypeEntry
 {
@@ -72,8 +70,8 @@ struct NativeAOTRuntimeDebugHeader
     // earlier debuggers should treat the module as if it had no .Net runtime at all.
     // If the cookie is valid a debugger is safe to assume the Major/Minor version fields
     // will follow, but any contents beyond that depends on the version values.
-    // The cookie value is currently set to 0x6e, 0x66, 0x31, 0x36 (NF16 in ascii)
-    const uint8_t Cookie[4] = { 0x6e, 0x66, 0x31, 0x36 };
+    // The cookie value is currently set to 0x4E 0x41 0x44 0x48 (NADH in ascii)
+    const uint8_t Cookie[4] = { 0x4E, 0x41, 0x44, 0x48 };
     
     // This counter can be incremented to indicate breaking changes
     // This field must be encoded little endian, regardless of the typical endianess of
@@ -187,6 +185,8 @@ extern "C" void PopulateDebugHeaders()
 
     RuntimeInstance *g_pTheRuntimeInstance = GetRuntimeInstance();
     MAKE_GLOBAL_ENTRY(g_pTheRuntimeInstance);
+
+    MAKE_GLOBAL_ENTRY(g_gcDacGlobals);
 
     g_NativeAOTRuntimeDebugHeader.DebugTypesList = currentType;
     g_NativeAOTRuntimeDebugHeader.GlobalsList = currentGlobal;
