@@ -25,6 +25,7 @@
 #include "StackFrameIterator.h"
 #include "thread.h"
 #include "threadstore.h"
+#include "gcinterface.dac.h"
 
 struct DebugTypeEntry
 {
@@ -146,6 +147,14 @@ extern "C" void PopulateDebugHeaders()
 {
     DebugTypeEntry *previousType = nullptr;
     DebugTypeEntry *currentType = nullptr;
+
+    MAKE_SIZE_ENTRY(GcDacVars);
+    MAKE_DEBUG_ENTRY(GcDacVars, major_version_number);
+    MAKE_DEBUG_ENTRY(GcDacVars, minor_version_number);
+    MAKE_DEBUG_ENTRY(GcDacVars, generation_size);
+    MAKE_DEBUG_ENTRY(GcDacVars, total_generation_count);
+    MAKE_DEBUG_ENTRY(GcDacVars, built_with_svr);
+    MAKE_DEBUG_ENTRY(GcDacVars, finalize_queue);
 
     MAKE_SIZE_ENTRY(ThreadStore);
     MAKE_DEBUG_ENTRY(ThreadStore, m_ThreadList);
