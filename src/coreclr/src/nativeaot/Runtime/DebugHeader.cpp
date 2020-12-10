@@ -17,13 +17,7 @@
 #include "thread.h"
 #include "threadstore.h"
 
-// typedef int BOOL;
-// //
-// // _UNCHECKED_OBJECTREF is for code that can't deal with DEBUG OBJECTREFs
-// //
-// typedef PTR_Object _UNCHECKED_OBJECTREF;
-// typedef DPTR(PTR_Object) PTR_UNCHECKED_OBJECTREF;
-// #define LIMITED_METHOD_CONTRACT
+GPTR_DECL(EEType, g_pFreeObjectEEType);
 
 struct DebugTypeEntry
 {
@@ -187,6 +181,7 @@ extern "C" void PopulateDebugHeaders()
     MAKE_GLOBAL_ENTRY(g_pTheRuntimeInstance);
 
     MAKE_GLOBAL_ENTRY(g_gcDacGlobals);
+    MAKE_GLOBAL_ENTRY(g_pFreeObjectEEType);
 
     g_NativeAOTRuntimeDebugHeader.DebugTypesList = currentType;
     g_NativeAOTRuntimeDebugHeader.GlobalsList = currentGlobal;
