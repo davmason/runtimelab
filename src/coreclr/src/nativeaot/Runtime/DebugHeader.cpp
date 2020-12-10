@@ -34,6 +34,13 @@ struct GlobalValueEntry
     const void *Address;
 };
 
+struct DefineEntry
+{
+    DefineEntry *Next;
+    const char *Name;
+    const char *Value;
+};
+
 // This structure is part of a in-memory serialization format that is used by diagnostic tools to
 // reason about the runtime. As a contract with our diagnostic tools it must be kept up-to-date
 // by changing the MajorVersion when breaking changes occur. If you are changing the runtime then
@@ -96,37 +103,24 @@ struct NativeAOTRuntimeDebugHeader
     DebugTypeEntry *DebugTypesList = nullptr;
 
     GlobalValueEntry *GlobalsList = nullptr;
+
+    DefineEntry *DefinesList = nullptr;
 };
 
 extern "C" NativeAOTRuntimeDebugHeader g_NativeAOTRuntimeDebugHeader = {};
 
-#define MAKE_DEBUG_ENTRY(TypeName, FieldName)                                                                               \
+#define MAKE_DEBUG_ENTRY(TypeName, FieldName, Value)                                                                        \
     do                                                                                                                      \
     {                                                                                                                       \
-        currentType = new (nothrow) DebugTypeEntry{ previousType, #TypeName, #FieldName, offsetof(TypeName, FieldName) };   \
+        currentType = new (nothrow) DebugTypeEntry{ previousType, #TypeName, #FieldName, Value };                             \
         previousType = currentType;                                                                                         \
-    } while(0)                                                                                                              \
+    } while(0)  
 
-#define MAKE_DEBUG_ENTRY_HARDCODED(TypeName, FieldName, Offset)                                                             \
-    do                                                                                                                      \
-    {                                                                                                                       \
-        currentType = new (nothrow) DebugTypeEntry{ previousType, #TypeName, #FieldName, Offset };                          \
-        previousType = currentType;                                                                                         \
-    } while(0)                                                                                                              \
+#define MAKE_DEBUG_FIELD_ENTRY(TypeName, FieldName) MAKE_DEBUG_ENTRY(TypeName, FieldName, offsetof(TypeName, FieldName))
 
-#define MAKE_SIZE_ENTRY(TypeName)                                                                                           \
-    do                                                                                                                      \
-    {                                                                                                                       \
-        currentType = new (nothrow) DebugTypeEntry{ previousType, #TypeName, "SIZEOF", sizeof(TypeName) };                  \
-        previousType = currentType;                                                                                         \
-    } while(0)                                                                                                              \
+#define MAKE_DEBUG_GLOBAL_ENTRY(Name, Value) MAKE_DEBUG_ENTRY(Globals, Name, Value)
 
-#define MAKE_SIZE_ENTRY_HARDCODED(TypeName, Size)                                                                           \
-    do                                                                                                                      \
-    {                                                                                                                       \
-        currentType = new (nothrow) DebugTypeEntry{ previousType, #TypeName, "SIZEOF", Size };                              \
-        previousType = currentType;                                                                                         \
-    } while(0)                                                                                                              \
+#define MAKE_SIZE_ENTRY(TypeName) MAKE_DEBUG_ENTRY(TypeName, SIZEOF, sizeof(TypeName))
 
 #define MAKE_GLOBAL_ENTRY(Name)                                                                                             \
     do                                                                                                                      \
@@ -141,38 +135,71 @@ extern "C" void PopulateDebugHeaders()
     DebugTypeEntry *currentType = nullptr;
 
     MAKE_SIZE_ENTRY(GcDacVars);
-    MAKE_DEBUG_ENTRY(GcDacVars, major_version_number);
-    MAKE_DEBUG_ENTRY(GcDacVars, minor_version_number);
-    MAKE_DEBUG_ENTRY(GcDacVars, generation_size);
-    MAKE_DEBUG_ENTRY(GcDacVars, total_generation_count);
-    MAKE_DEBUG_ENTRY(GcDacVars, built_with_svr);
-    MAKE_DEBUG_ENTRY(GcDacVars, finalize_queue);
+    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, major_version_number);
+    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, minor_version_number);
+    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, generation_size);
+    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, total_generation_count);
+    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, built_with_svr);
+    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, finalize_queue);
+    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, generation_table);
+    MAKE_DEBUG_FIELD_ENTRY(GcDacVars, ephemeral_heap_segment);
+
+    MAKE_SIZE_ENTRY(gc_alloc_context);
+    MAKE_DEBUG_FIELD_ENTRY(gc_alloc_context, alloc_ptr);
+    MAKE_DEBUG_FIELD_ENTRY(gc_alloc_context, alloc_limit);
+    MAKE_DEBUG_FIELD_ENTRY(gc_alloc_context, alloc_bytes;);
+    MAKE_DEBUG_FIELD_ENTRY(gc_alloc_context, alloc_bytes_uoh);
+    MAKE_DEBUG_FIELD_ENTRY(gc_alloc_context, alloc_count);
+
+    MAKE_SIZE_ENTRY(dac_generation);
+    // These first few fields are made manually because of the nested allocation_context struct
+    MAKE_DEBUG_ENTRY(dac_generation, alloc_ptr, offsetof(dac_generation, allocation_context.alloc_ptr));
+    MAKE_DEBUG_ENTRY(dac_generation, alloc_limit, offsetof(dac_generation, allocation_context.alloc_limit));
+    MAKE_DEBUG_ENTRY(dac_generation, alloc_bytes, offsetof(dac_generation, allocation_context.alloc_bytes));
+    MAKE_DEBUG_ENTRY(dac_generation, alloc_bytes_uoh, offsetof(dac_generation, allocation_context.alloc_bytes_uoh));
+    MAKE_DEBUG_ENTRY(dac_generation, alloc_count, offsetof(dac_generation, allocation_context.alloc_count));
+    MAKE_DEBUG_FIELD_ENTRY(dac_generation, start_segment);
+    MAKE_DEBUG_FIELD_ENTRY(dac_generation, allocation_start);
+
+    MAKE_SIZE_ENTRY(dac_heap_segment);
+    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, allocated);
+    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, committed);
+    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, reserved);
+    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, used);
+    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, mem);
+    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, flags);
+    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, next);
+    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, background_allocated);
+    MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, heap);
+
+    MAKE_DEBUG_GLOBAL_ENTRY(FinalizeExtraSegCount, dac_finalize_queue::ExtraSegCount);
+    MAKE_DEBUG_GLOBAL_ENTRY(MinObjectSize, MIN_OBJECT_SIZE);
 
     MAKE_SIZE_ENTRY(ThreadStore);
-    MAKE_DEBUG_ENTRY(ThreadStore, m_ThreadList);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStore, m_ThreadList);
 
     MAKE_SIZE_ENTRY(ThreadBuffer);
-    MAKE_DEBUG_ENTRY(ThreadBuffer, m_pNext);
-    MAKE_DEBUG_ENTRY(ThreadBuffer, m_rgbAllocContextBuffer);
-    MAKE_DEBUG_ENTRY(ThreadBuffer, m_threadId);
-    MAKE_DEBUG_ENTRY(ThreadBuffer, m_pThreadStressLog);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadBuffer, m_pNext);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadBuffer, m_rgbAllocContextBuffer);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadBuffer, m_threadId);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadBuffer, m_pThreadStressLog);
 
     // EEThreadID is forward declared and not available
-    MAKE_SIZE_ENTRY_HARDCODED(EEThreadID, sizeof(void*));
-    MAKE_DEBUG_ENTRY_HARDCODED(EEThreadID, m_FiberPtrId, 0);
+    MAKE_DEBUG_ENTRY(EEThreadID, SIZEOF, sizeof(void*));
+    MAKE_DEBUG_ENTRY(EEThreadID, m_FiberPtrId, 0);
 
     MAKE_SIZE_ENTRY(EEType);
-    MAKE_DEBUG_ENTRY(EEType, m_uBaseSize);
-    MAKE_DEBUG_ENTRY(EEType, m_usComponentSize);
+    MAKE_DEBUG_FIELD_ENTRY(EEType, m_uBaseSize);
+    MAKE_DEBUG_FIELD_ENTRY(EEType, m_usComponentSize);
 
     MAKE_SIZE_ENTRY(Object);
-    MAKE_DEBUG_ENTRY(Object, m_pEEType);
+    MAKE_DEBUG_FIELD_ENTRY(Object, m_pEEType);
 
     MAKE_SIZE_ENTRY(Array);
-    MAKE_DEBUG_ENTRY(Array, m_Length);
+    MAKE_DEBUG_FIELD_ENTRY(Array, m_Length);
 
     MAKE_SIZE_ENTRY(RuntimeInstance);
-    MAKE_DEBUG_ENTRY(RuntimeInstance, m_pThreadStore);
+    MAKE_DEBUG_FIELD_ENTRY(RuntimeInstance, m_pThreadStore);
 
     GlobalValueEntry *previousGlobal = nullptr;
     GlobalValueEntry *currentGlobal = nullptr;
