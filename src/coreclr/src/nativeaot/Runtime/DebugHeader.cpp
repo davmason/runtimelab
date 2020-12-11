@@ -191,6 +191,13 @@ extern "C" void PopulateDebugHeaders()
     MAKE_SIZE_ENTRY(EEType);
     MAKE_DEBUG_FIELD_ENTRY(EEType, m_uBaseSize);
     MAKE_DEBUG_FIELD_ENTRY(EEType, m_usComponentSize);
+    MAKE_DEBUG_FIELD_ENTRY(EEType, m_usFlags);
+    MAKE_DEBUG_ENTRY(EEType, m_pBaseType, offsetof(EEType, m_RelatedType) + offsetof(EEType::RelatedTypeUnion, m_pBaseType));
+    MAKE_DEBUG_ENTRY(EEType, m_ppBaseTypeViaIAT, offsetof(EEType, m_RelatedType) + offsetof(EEType::RelatedTypeUnion, m_ppBaseTypeViaIAT));
+    MAKE_DEBUG_ENTRY(EEType, m_pCanonicalType, offsetof(EEType, m_RelatedType) + offsetof(EEType::RelatedTypeUnion, m_pCanonicalType));
+    MAKE_DEBUG_ENTRY(EEType, m_ppCanonicalTypeViaIAT, offsetof(EEType, m_RelatedType) + offsetof(EEType::RelatedTypeUnion, m_ppCanonicalTypeViaIAT));
+    MAKE_DEBUG_ENTRY(EEType, m_pRelatedParameterType, offsetof(EEType, m_RelatedType) + offsetof(EEType::RelatedTypeUnion, m_pRelatedParameterType));
+    MAKE_DEBUG_ENTRY(EEType, m_ppRelatedParameterTypeViaIAT, offsetof(EEType, m_RelatedType) + offsetof(EEType::RelatedTypeUnion, m_ppRelatedParameterTypeViaIAT));
 
     MAKE_SIZE_ENTRY(Object);
     MAKE_DEBUG_FIELD_ENTRY(Object, m_pEEType);
