@@ -153,12 +153,7 @@ extern "C" void PopulateDebugHeaders()
     MAKE_DEBUG_FIELD_ENTRY(gc_alloc_context, alloc_count);
 
     MAKE_SIZE_ENTRY(dac_generation);
-    // These first few fields are made manually because of the nested allocation_context struct
-    MAKE_DEBUG_ENTRY(dac_generation, alloc_ptr, offsetof(dac_generation, allocation_context.alloc_ptr));
-    MAKE_DEBUG_ENTRY(dac_generation, alloc_limit, offsetof(dac_generation, allocation_context.alloc_limit));
-    MAKE_DEBUG_ENTRY(dac_generation, alloc_bytes, offsetof(dac_generation, allocation_context.alloc_bytes));
-    MAKE_DEBUG_ENTRY(dac_generation, alloc_bytes_uoh, offsetof(dac_generation, allocation_context.alloc_bytes_uoh));
-    MAKE_DEBUG_ENTRY(dac_generation, alloc_count, offsetof(dac_generation, allocation_context.alloc_count));
+    MAKE_DEBUG_FIELD_ENTRY(dac_generation, allocation_context);
     MAKE_DEBUG_FIELD_ENTRY(dac_generation, start_segment);
     MAKE_DEBUG_FIELD_ENTRY(dac_generation, allocation_start);
 
