@@ -118,7 +118,8 @@ extern "C" NativeAOTRuntimeDebugHeader g_NativeAOTRuntimeDebugHeader = {};
 
 #define MAKE_DEBUG_FIELD_ENTRY(TypeName, FieldName) MAKE_DEBUG_ENTRY(TypeName, FieldName, offsetof(TypeName, FieldName))
 
-#define MAKE_DEBUG_GLOBAL_ENTRY(Name, Value) MAKE_DEBUG_ENTRY(Globals, Name, Value)
+// TODO: this would probably make more sense in the globals list
+#define MAKE_DEFINE_ENTRY(Name, Value) MAKE_DEBUG_ENTRY(Globals, Name, Value)
 
 #define MAKE_SIZE_ENTRY(TypeName) MAKE_DEBUG_ENTRY(TypeName, SIZEOF, sizeof(TypeName))
 
@@ -168,8 +169,8 @@ extern "C" void PopulateDebugHeaders()
     MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, background_allocated);
     MAKE_DEBUG_FIELD_ENTRY(dac_heap_segment, heap);
 
-    MAKE_DEBUG_GLOBAL_ENTRY(FinalizeExtraSegCount, dac_finalize_queue::ExtraSegCount);
-    MAKE_DEBUG_GLOBAL_ENTRY(MinObjectSize, MIN_OBJECT_SIZE);
+    MAKE_DEFINE_ENTRY(FinalizeExtraSegCount, dac_finalize_queue::ExtraSegCount);
+    MAKE_DEFINE_ENTRY(MinObjectSize, MIN_OBJECT_SIZE);
 
     MAKE_SIZE_ENTRY(ThreadStore);
     MAKE_DEBUG_FIELD_ENTRY(ThreadStore, m_ThreadList);
@@ -195,6 +196,18 @@ extern "C" void PopulateDebugHeaders()
     MAKE_DEBUG_ENTRY(EEType, m_pRelatedParameterType, offsetof(EEType, m_RelatedType) + offsetof(EEType::RelatedTypeUnion, m_pRelatedParameterType));
     MAKE_DEBUG_ENTRY(EEType, m_ppRelatedParameterTypeViaIAT, offsetof(EEType, m_RelatedType) + offsetof(EEType::RelatedTypeUnion, m_ppRelatedParameterTypeViaIAT));
 
+    MAKE_SIZE_ENTRY(StressLog);
+    MAKE_DEBUG_ENTRY(StressLog, facilitiesToLog);
+    MAKE_DEBUG_ENTRY(StressLog, levelToLog);
+    MAKE_DEBUG_ENTRY(StressLog, MaxSizePerThread);
+    MAKE_DEBUG_ENTRY(StressLog, MaxSizeTotal);
+    MAKE_DEBUG_ENTRY(StressLog, totalChunk);
+    MAKE_DEBUG_ENTRY(StressLog, logs);
+    MAKE_DEBUG_ENTRY(StressLog, deadCount);
+    MAKE_DEBUG_ENTRY(StressLog, tickFrequency);
+    MAKE_DEBUG_ENTRY(StressLog, startTimeStamp);
+    MAKE_DEBUG_ENTRY(StressLog, startTime);
+
     MAKE_SIZE_ENTRY(Object);
     MAKE_DEBUG_FIELD_ENTRY(Object, m_pEEType);
 
@@ -212,6 +225,8 @@ extern "C" void PopulateDebugHeaders()
 
     MAKE_GLOBAL_ENTRY(g_gcDacGlobals);
     MAKE_GLOBAL_ENTRY(g_pFreeObjectEEType);
+    void *g_stressLog = &StressLog::theLog;
+    MAKE_GLOBAL_ENTRY(g_stressLog);
 
     g_NativeAOTRuntimeDebugHeader.DebugTypesList = currentType;
     g_NativeAOTRuntimeDebugHeader.GlobalsList = currentGlobal;

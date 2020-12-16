@@ -277,12 +277,14 @@ typedef DPTR(ThreadStressLog) PTR_ThreadStressLog;
 struct StressLogChunk;
 typedef DPTR(StressLogChunk) PTR_StressLogChunk;
 struct DacpStressLogEnumCBArgs;
+extern "C" void PopulateDebugHeaders();
 
 
 //==========================================================================================
 // StressLog - per-thread circular queue of stresslog messages
 //
 class StressLog {
+    friend void PopulateDebugHeaders();
 public:
 // private:
     unsigned facilitiesToLog;               // Bitvector of facilities to log (see loglf.h)
