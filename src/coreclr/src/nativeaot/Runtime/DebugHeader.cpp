@@ -224,7 +224,9 @@ extern "C" void PopulateDebugHeaders()
     MAKE_GLOBAL_ENTRY(g_pTheRuntimeInstance);
 
     MAKE_GLOBAL_ENTRY(g_gcDacGlobals);
+
     MAKE_GLOBAL_ENTRY(g_pFreeObjectEEType);
+
     void *g_stressLog = &StressLog::theLog;
     MAKE_GLOBAL_ENTRY(g_stressLog);
 
