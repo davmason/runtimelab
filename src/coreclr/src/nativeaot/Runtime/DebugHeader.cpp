@@ -205,6 +205,28 @@ extern "C" void PopulateDebugHeaders()
     MAKE_DEBUG_FIELD_ENTRY(StressLog, startTimeStamp);
     MAKE_DEBUG_FIELD_ENTRY(StressLog, startTime);
 
+    MAKE_SIZE_ENTRY(ThreadStressLog);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, next);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, threadId);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, isDead);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, readHasWrapped);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, writeHasWrapped);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, curPtr);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, readPtr);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, chunkListHead);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, chunkListTail);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, curReadChunk);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, curWriteChunk);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, chunkListLength);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, pThread);
+    MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, origCurPtr);
+
+    MAKE_SIZE_ENTRY(StressMsg);
+    MAKE_DEBUG_FIELD_ENTRY(StressMsg, fmtOffsCArgs);
+    MAKE_DEBUG_FIELD_ENTRY(StressMsg, facility);
+    MAKE_DEBUG_FIELD_ENTRY(StressMsg, timeStamp);
+    MAKE_DEBUG_FIELD_ENTRY(StressMsg, args);
+
     MAKE_SIZE_ENTRY(Object);
     MAKE_DEBUG_FIELD_ENTRY(Object, m_pEEType);
 
