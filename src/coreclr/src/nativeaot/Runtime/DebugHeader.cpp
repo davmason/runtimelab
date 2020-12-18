@@ -197,16 +197,13 @@ extern "C" void PopulateDebugHeaders()
     MAKE_DEBUG_ENTRY(EEType, m_ppRelatedParameterTypeViaIAT, offsetof(EEType, m_RelatedType) + offsetof(EEType::RelatedTypeUnion, m_ppRelatedParameterTypeViaIAT));
 
     MAKE_SIZE_ENTRY(StressLog);
-    MAKE_DEBUG_ENTRY(StressLog, facilitiesToLog);
-    MAKE_DEBUG_ENTRY(StressLog, levelToLog);
-    MAKE_DEBUG_ENTRY(StressLog, MaxSizePerThread);
-    MAKE_DEBUG_ENTRY(StressLog, MaxSizeTotal);
-    MAKE_DEBUG_ENTRY(StressLog, totalChunk);
-    MAKE_DEBUG_ENTRY(StressLog, logs);
-    MAKE_DEBUG_ENTRY(StressLog, deadCount);
-    MAKE_DEBUG_ENTRY(StressLog, tickFrequency);
-    MAKE_DEBUG_ENTRY(StressLog, startTimeStamp);
-    MAKE_DEBUG_ENTRY(StressLog, startTime);
+    MAKE_DEBUG_FIELD_ENTRY(StressLog, facilitiesToLog);
+    MAKE_DEBUG_FIELD_ENTRY(StressLog, levelToLog);
+    MAKE_DEBUG_FIELD_ENTRY(StressLog, totalChunk);
+    MAKE_DEBUG_FIELD_ENTRY(StressLog, logs);
+    MAKE_DEBUG_FIELD_ENTRY(StressLog, tickFrequency);
+    MAKE_DEBUG_FIELD_ENTRY(StressLog, startTimeStamp);
+    MAKE_DEBUG_FIELD_ENTRY(StressLog, startTime);
 
     MAKE_SIZE_ENTRY(Object);
     MAKE_DEBUG_FIELD_ENTRY(Object, m_pEEType);
