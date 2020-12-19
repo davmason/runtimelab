@@ -204,6 +204,7 @@ extern "C" void PopulateDebugHeaders()
     MAKE_DEBUG_FIELD_ENTRY(StressLog, tickFrequency);
     MAKE_DEBUG_FIELD_ENTRY(StressLog, startTimeStamp);
     MAKE_DEBUG_FIELD_ENTRY(StressLog, startTime);
+    MAKE_DEBUG_FIELD_ENTRY(StressLog, moduleOffset);
 
     MAKE_SIZE_ENTRY(ThreadStressLog);
     MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, next);
@@ -220,6 +221,14 @@ extern "C" void PopulateDebugHeaders()
     MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, chunkListLength);
     MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, pThread);
     MAKE_DEBUG_FIELD_ENTRY(ThreadStressLog, origCurPtr);
+
+    MAKE_SIZE_ENTRY(StressLogChunk);
+    MAKE_DEFINE_ENTRY(StressLogChunk_ChunkSize, STRESSLOG_CHUNK_SIZE);
+    MAKE_DEBUG_FIELD_ENTRY(StressLogChunk, prev);
+    MAKE_DEBUG_FIELD_ENTRY(StressLogChunk, next);
+    MAKE_DEBUG_FIELD_ENTRY(StressLogChunk, buf);
+    MAKE_DEBUG_FIELD_ENTRY(StressLogChunk, dwSig1);
+    MAKE_DEBUG_FIELD_ENTRY(StressLogChunk, dwSig2);
 
     MAKE_SIZE_ENTRY(StressMsg);
     MAKE_DEBUG_FIELD_ENTRY(StressMsg, fmtOffsCArgs);
@@ -248,6 +257,11 @@ extern "C" void PopulateDebugHeaders()
 
     void *g_stressLog = &StressLog::theLog;
     MAKE_GLOBAL_ENTRY(g_stressLog);
+
+    // Some DAC functions need to know the module base address, easiest way is with
+    // the HANDLE to our module which is the base address.
+    HANDLE moduleBaseAddress = PalGetModuleHandleFromPointer(&PopulateDebugHeaders);
+    MAKE_GLOBAL_ENTRY(moduleBaseAddress);
 
     g_NativeAOTRuntimeDebugHeader.DebugTypesList = currentType;
     g_NativeAOTRuntimeDebugHeader.GlobalsList = currentGlobal;
